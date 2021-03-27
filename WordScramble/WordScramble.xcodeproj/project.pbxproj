@@ -13,6 +13,7 @@
 		C09807DB260D663E004ED354 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C09807DA260D663E004ED354 /* Assets.xcassets */; };
 		C09807DE260D663E004ED354 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C09807DD260D663E004ED354 /* Preview Assets.xcassets */; };
 		C09807E1260D663E004ED354 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C09807DF260D663E004ED354 /* LaunchScreen.storyboard */; };
+		C098081C260EC91C004ED354 /* start.txt in Resources */ = {isa = PBXBuildFile; fileRef = C098081B260EC91C004ED354 /* start.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		C09807DD260D663E004ED354 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		C09807E0260D663E004ED354 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		C09807E2260D663E004ED354 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C098081B260EC91C004ED354 /* start.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = start.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +63,7 @@
 				C09807D8260D663C004ED354 /* ContentView.swift */,
 				C09807DA260D663E004ED354 /* Assets.xcassets */,
 				C09807DF260D663E004ED354 /* LaunchScreen.storyboard */,
+				C098081B260EC91C004ED354 /* start.txt */,
 				C09807E2260D663E004ED354 /* Info.plist */,
 				C09807DC260D663E004ED354 /* Preview Content */,
 			);
@@ -133,6 +136,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C09807E1260D663E004ED354 /* LaunchScreen.storyboard in Resources */,
+				C098081C260EC91C004ED354 /* start.txt in Resources */,
 				C09807DE260D663E004ED354 /* Preview Assets.xcassets in Resources */,
 				C09807DB260D663E004ED354 /* Assets.xcassets in Resources */,
 			);
