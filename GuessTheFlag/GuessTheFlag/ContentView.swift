@@ -11,6 +11,9 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var punctuation = 0
+    @State private var rotateAnimation = 0.0
+    @State private var opacity = 1.0
+    @State private var animationError = false
     @State private var scoreTitle = ""
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
@@ -27,6 +30,10 @@ struct ContentView: View {
                     .font(.largeTitle)
                     .fontWeight(.black)
                     .foregroundColor(.white)
+                Text("\(scoreTitle)")
+                    .font(.headline)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(Color.white)
             }
             ForEach(0..<3) { number in
                 Button(action: {
@@ -38,35 +45,54 @@ struct ContentView: View {
                         .overlay(Capsule().stroke(Color.black,lineWidth: 1))
                         .shadow(color: .black, radius: 2)
                 })
+                .animation(Animation.default.repeatCount(5, autoreverses: true))
+                .opacity(number == self.correctAnswer ? 1 : opacity)
+                .rotation3DEffect(
+                    .degrees(number == self.correctAnswer ? rotateAnimation : 0),
+                    axis:(x: 0.0, y: 1.0, z: 0.0))
             }
             Text("Score: \(punctuation)")
                 .font(.largeTitle)
                 .fontWeight(.black)
                 .foregroundColor(.white)
             Spacer()
-            }
-        }
-        .alert(isPresented: $showingScore) {
-            Alert(title: Text(scoreTitle), message: Text("you score is \(punctuation)"), dismissButton: .default(Text("Continue")) {
+            
+            Button("Continue") {
                 self.askQuestion()
-            })
+            }
+            .frame(width: 250, height: 50)
+            .font(.system(size: 17, weight: .bold))
+            .foregroundColor(.white)
+            .background(Color.blue)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            }
         }
     }
     
     func flagTapped(_ number: Int) {
+        opacity = 0.75
         if number == correctAnswer {
             scoreTitle = "Correct +100"
             punctuation += 100
-        } else {
+            withAnimation(.easeOut) {
+                rotateAnimation += 360
+            }
+        } else if punctuation == 0 {
+            scoreTitle = "wrong,  That's \(countries[number])'s flag!"
+        }else {
             scoreTitle = "wrong, this is the flag of \(countries[number]), -50"
             punctuation -= 50
+            withAnimation(.easeOut) {
+            animationError = true
+            }
         }
-        showingScore = true
     }
     
     func askQuestion() {
         self.countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        opacity = 1.0
+        scoreTitle = " "
     }
 }
 
