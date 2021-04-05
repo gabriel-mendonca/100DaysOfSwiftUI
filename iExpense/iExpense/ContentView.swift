@@ -7,93 +7,79 @@
 
 import SwiftUI
 
-struct User: Codable {
-    var firstName: String
-    var lastName: String
+struct ExpenseItem: Identifiable, Codable {
+    var id = UUID()
+    let name: String
+    let type: String
+    let amount: Int
+}
+
+class Expenses: ObservableObject {
+    @Published var items = [ExpenseItem]() {
+        didSet {
+            let encoder = JSONEncoder()
+            if let encoded = try? encoder.encode(items) {
+                UserDefaults.standard.set(encoded, forKey: "Items")
+            }
+        }
+    }
+    
+    init() {
+        if let items = UserDefaults.standard.data(forKey: "Items") {
+            let decoder = JSONDecoder()
+            if let decoded = try? decoder.decode([ExpenseItem].self, from: items) {
+                self.items = decoded
+                return
+            }
+        }
+        self.items = []
+    }
 }
 
 struct ContentView: View {
     
-    @State private var showingSheet = false
-    @State private var showingAlert = false
-    @State private var user = User(firstName: "Gabriel", lastName: "Goncalves")
-    @State private var number = [Int]()
-    @State private var currentNumbers = 1
-    @State private var tapCount = UserDefaults.standard.integer(forKey: "tap")
+    @ObservedObject var expenses = Expenses()
+    @State private var colorAmount = ""
+    @State private var showingAddExpense = false
     var body: some View {
         NavigationView {
-            VStack(spacing: 15) {
-            
-            Text("your name is \(user.firstName) \(user.lastName)")
-            .padding()
-            
-            TextField("first name", text: $user.firstName).padding(10)
-                .border(Color.black, width: 1)
-            TextField("last name", text: $user.lastName).padding(10)
-                .border(Color.black, width: 1)
-            
-            Button("tap count: \(tapCount)") {
-                tapCount += 1
-                UserDefaults.standard.set(self.tapCount, forKey: "tap")
-            }
-            Button("add number") {
-                addNumbers()
-            }
-            
             List {
-                ForEach(number,id: \.self) {
-                    Text("\($0)")
-                }.onDelete(perform: removeRows)
-            }
-            
-            Button("button sheet") {
-                self.showingSheet.toggle()
-            }.sheet(isPresented: $showingSheet) {
-                SecondView(name: "@gabriel_dev_swiftui")
-            }
-            .frame(width: 250, height: 50)
-            .border(Color.black, width: 1)
-            .clipShape(RoundedRectangle(cornerRadius: 0.0))
-            
-            Button("Save user") {
-                let encoder = JSONEncoder()
-                
-                if let data = try? encoder.encode(self.user) {
-                    UserDefaults.standard.set(data, forKey: "userData")
-                }
-                showingAlert = true
-            }
-            .frame(width: 250, height: 50)
-            .foregroundColor(.white)
-            .background(Color.blue)
-            .clipShape(RoundedRectangle(cornerRadius: 5.0))
-                
-            .alert(isPresented: $showingAlert, content: {
-                Alert(title: Text("success!"), message: Text("your data has been successfully saved"), dismissButton: .default(Text("Ok")))
-            })
-        }.navigationBarItems(leading: EditButton())
-      }
+                ForEach(expenses.items) { item in
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(item.name)
+                                .font(.headline)
+                            Text(item.type)
+                        }
+                        Spacer()
+                        Text("$\(item.amount)").foregroundColor(itemsAmount(items: item))
+                    }
+                }.onDelete(perform: { indexSet in
+                    removeItems(at: indexSet)
+                })
+            }.navigationBarTitle("iExpense")
+            .navigationBarItems(leading: EditButton(),trailing: Button(action: {
+                showingAddExpense = true
+            }, label: {
+                Image(systemName: "plus")
+            }))
+        }.sheet(isPresented: $showingAddExpense) {
+            AddView(expenses: self.expenses)
+        }
     }
     
-    func addNumbers() {
-        let numbers = Int.random(in: 0...200)
-        number.append(numbers)
+    func removeItems(at offSets: IndexSet) {
+        expenses.items.remove(atOffsets: offSets)
     }
-    func removeRows(at offSets: IndexSet) {
-        number.remove(atOffsets: offSets)
-    }
-}
-
-struct SecondView: View {
-    @Environment(\.presentationMode) var presentationMode
-    var name: String
-    var body: some View {
-        VStack(spacing: 20) {
-        Text("hello, \(name)!")
-            Button("dismiss") {
-                self.presentationMode.wrappedValue.dismiss()
+    
+    func itemsAmount(items: ExpenseItem) -> Color {
+        if items.amount <= 10 {
+               return Color.green
+            } else if items.amount > 10 && items.amount <= 100 {
+               return Color.blue
+            } else {
+               return Color.red
             }
-        }
     }
 }
 
