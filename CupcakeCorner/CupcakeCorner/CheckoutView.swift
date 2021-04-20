@@ -10,6 +10,7 @@ import SwiftUI
 struct CheckoutView: View {
     
     @ObservedObject var order: Order
+    @State private var titleConfirmationMessage = ""
     @State private var confirmationMessage = ""
     @State private var showingConfirmation = false
     
@@ -33,7 +34,7 @@ struct CheckoutView: View {
             }
         }
         .alert(isPresented: $showingConfirmation, content: {
-            Alert(title: Text("Thank you!"), message: Text(confirmationMessage), dismissButton: .default(Text("OK")))
+            Alert(title: Text(titleConfirmationMessage), message: Text(confirmationMessage), dismissButton: .default(Text("OK")))
         })
         .navigationBarTitle("Check out", displayMode: .inline)
     }
@@ -57,11 +58,14 @@ struct CheckoutView: View {
             }
             
             if let decodedOrder = try? JSONDecoder().decode(Order.self, from: data) {
-                self.confirmationMessage = "your order for \(order.quantity) x \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!"
-                self.showingConfirmation = true
+                                self.titleConfirmationMessage = "Thank you!"
+                                self.confirmationMessage = "your order for \(order.quantity) x \(Order.types[decodedOrder.type].lowercased()) cupcakes is on its way!"
             } else {
+                self.titleConfirmationMessage = "Without network connection"
+                self.confirmationMessage = "An error occurred while trying to connect to the internet, connect the device to the internet"
                 print("Invalid response from server")
             }
+            self.showingConfirmation = true
         }.resume()
     }
 }
