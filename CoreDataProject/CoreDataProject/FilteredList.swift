@@ -6,23 +6,33 @@
 //
 
 import SwiftUI
+import CoreData
+
+enum BeginWith {
+    case lastName
+    case firstName
+}
 
 struct FilteredList: View {
     
     var fetchRequest: FetchRequest<Singer>
+    var singers: FetchedResults<Singer> { fetchRequest.wrappedValue }
     
-    init(filter: String) {
-        fetchRequest = FetchRequest(entity: Singer.entity(), sortDescriptors: [], predicate: NSPredicate(format: "lastName BEGINSWITH %@", filter))
+    init(filter: String,sort: NSSortDescriptor, predicate: BeginWith) {
+        var predicateValue: String {
+            switch predicate {
+            case .firstName:
+                return "firstName"
+            case .lastName:
+                return "lastName"
+            }
+        }
+        fetchRequest = FetchRequest<Singer>(entity: Singer.entity(), sortDescriptors: [sort], predicate: NSPredicate(format: "%K BEGINSWITH %@",predicateValue, filter))
+        
     }
     var body: some View {
-        List(fetchRequest.wrappedValue, id: \.self) { singer in
+        List(singers ,id: \.self) { singer in
             Text("\(singer.wrappedFirstName) \(singer.wrappedLastName)")
         }
     }
 }
-
-//struct FilteredList_Previews: PreviewProvider {
-//    static var previews: some View {
-//        FilteredList(filter: <#String#>)
-//    }
-//}
